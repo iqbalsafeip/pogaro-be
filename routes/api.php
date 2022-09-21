@@ -1,5 +1,6 @@
 <?php
 
+use App\Http\Controllers\ApprovalController;
 use App\Http\Controllers\HydraController;
 use App\Http\Controllers\RoleController;
 use App\Http\Controllers\UserController;
@@ -24,7 +25,10 @@ Route::get('hydra', [HydraController::class, 'hydra']);
 Route::get('hydra/version', [HydraController::class, 'version']);
 
 Route::apiResource('users', UserController::class)->except(['edit', 'create', 'store', 'update'])->middleware(['auth:sanctum', 'ability:admin,super-admin']);
-Route::post('users', [UserController::class, 'store']);
+Route::post('users', [UserController::class, 'store'])->middleware(['auth:sanctum', 'ability:admin,super-admin']);
+Route::get('mahasiswa', [UserController::class, 'mahasiswa'])->middleware(['auth:sanctum', 'ability:admin,super-admin,user']);
+Route::post('approval', [ApprovalController::class, 'create'])->middleware(['auth:sanctum']);
+Route::get('approval/{user:id}', [ApprovalController::class, 'getApprovalById']);
 Route::put('users/{user}', [UserController::class, 'update'])->middleware(['auth:sanctum', 'ability:admin,super-admin,user']);
 Route::post('users/{user}', [UserController::class, 'update'])->middleware(['auth:sanctum', 'ability:admin,super-admin,user']);
 Route::patch('users/{user}', [UserController::class, 'update'])->middleware(['auth:sanctum', 'ability:admin,super-admin,user']);

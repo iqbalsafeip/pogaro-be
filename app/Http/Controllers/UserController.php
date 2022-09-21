@@ -2,6 +2,7 @@
 
 namespace App\Http\Controllers;
 
+use App\Models\Prodi;
 use App\Models\Role;
 use App\Models\User;
 use Illuminate\Http\Request;
@@ -15,7 +16,13 @@ class UserController extends Controller {
      * @return \Illuminate\Http\Response
      */
     public function index() {
-        return User::all();
+        return User::with('roles', 'prodi')->get();
+    }
+
+    public function mahasiswa() {
+        return User::with('roles', 'prodi', 'profile')->whereHas('roles', function($q){
+            $q->where('slug', '=', 'mhs');
+        })->get();
     }
 
     /**
@@ -29,6 +36,8 @@ class UserController extends Controller {
             'email' => 'required|email',
             'password' => 'required',
             'name' => 'nullable|string',
+            'role' => 'required',
+            'prodi' => 'nullable'
         ]);
 
         $user = User::where('email', $creds['email'])->first();
@@ -41,9 +50,11 @@ class UserController extends Controller {
             'password' => Hash::make($creds['password']),
             'name' => $creds['name'],
         ]);
-
-        $defaultRoleSlug = config('hydra.default_user_role_slug', 'user');
-        $user->roles()->attach(Role::where('slug', $defaultRoleSlug)->first());
+        
+        $user->roles()->attach(Role::where('slug', $creds['role'])->first());
+        if($creds['prodi']){
+            $user->prodi()->attach(Prodi::where('slug', $creds['prodi'])->first());
+        }
 
         return $user;
     }
@@ -62,7 +73,7 @@ class UserController extends Controller {
 
         $user = User::where('email', $creds['email'])->first();
         if (! $user || ! Hash::check($request->password, $user->password)) {
-            return response(['error' => 1, 'message' => 'invalid credentials'], 401);
+            return response(['error' => 1, 'message' => 'Email/ Password tidak sesuai'], 401);
         }
 
         if (config('hydra.delete_previous_access_tokens_on_login', false)) {
@@ -71,9 +82,17 @@ class UserController extends Controller {
 
         $roles = $user->roles->pluck('slug')->all();
 
+
         $plainTextToken = $user->createToken('hydra-api-token', $roles)->plainTextToken;
 
-        return response(['error' => 0, 'id' => $user->id, 'token' => $plainTextToken], 200);
+        $data = $user;
+        $data['roles'] = $data->roles;
+        if($data->prodi){
+            $data['prodi'] = $data->prodi;
+        }
+
+
+        return response(['error' => 0, 'data' => $data, 'token' => $plainTextToken], 200);
     }
 
     /**
@@ -145,6 +164,15 @@ class UserController extends Controller {
      * @return mixed
      */
     public function me(Request $request) {
-        return $request->user();
+        $user = $request->user();
+        $user['roles'] = $user->roles;
+        if($user->prodi){
+            $user['prodi'] = $user->prodi;
+        }
+
+        if($user->profile){
+            $user['name'] = $user->profile->nmmhs;
+        }
+        return $user;
     }
 }

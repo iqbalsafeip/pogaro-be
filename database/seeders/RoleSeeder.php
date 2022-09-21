@@ -20,11 +20,12 @@ class RoleSeeder extends Seeder {
 
         $roles = [
             ['name' => 'Administrator', 'slug' => 'admin'],
-            ['name' => 'User', 'slug' => 'user'],
-            ['name' => 'Customer', 'slug' => 'customer'],
-            ['name' => 'Editor', 'slug' => 'editor'],
-            ['name' => 'All', 'slug' => '*'],
-            ['name' => 'Super Admin', 'slug' => 'super-admin'],
+            ['name' => 'CDC', 'slug' => 'cdc'],
+            ['name' => 'Program Studi', 'slug' => 'prodi'],
+            ['name' => 'Ketua Program Studi', 'slug' => 'kprodi'],
+            ['name' => 'Perpustakaan', 'slug' => 'perpus'],
+            ['name' => 'Keuangan', 'slug' => 'keuangan'],
+            ['name' => 'Mahasiswa', 'slug' => 'mhs'],
         ];
 
         collect($roles)->each(function ($role) {
