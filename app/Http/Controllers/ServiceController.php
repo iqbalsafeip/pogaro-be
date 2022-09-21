@@ -2,13 +2,13 @@
 
 namespace App\Http\Controllers;
 
-use App\Models\MetodePembayaran;
+use App\Models\Service;
 use Illuminate\Http\Request;
 
-class MetodePembayaranController extends Controller
+class ServiceController extends Controller
 {
     public function index($id){
-        $res = MetodePembayaran::where(['barber_id' => $id])->all();
+        $res = Service::where(['barber_id' => $id])->all();
 
         return response()->json([
             'data' => $res
@@ -16,7 +16,7 @@ class MetodePembayaranController extends Controller
     }
 
     public function store(Request $request){
-        $service = new MetodePembayaran();
+        $service = new Service();
         $data = $request->all();
         foreach($data as $d => $f){
             $service->$d = $f;
@@ -29,7 +29,7 @@ class MetodePembayaranController extends Controller
     }
 
     public function hapus($id){
-        $service = MetodePembayaran::findOrFail($id);
+        $service = Service::findOrFail($id);
         $service->delete();
 
         return response()->json([

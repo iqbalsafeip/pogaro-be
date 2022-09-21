@@ -16,12 +16,12 @@ return new class extends Migration
         Schema::create('barbers', function (Blueprint $table) {
             $table->id();
             $table->string('user_id')->nullable();
-            $table->string('nama');
-            $table->string('alamat');
-            $table->string('no_hp');
-            $table->string('nama_barber');
-            $table->string('longitude');
-            $table->string('latitude');
+            $table->string('nama')->nullable();
+            $table->string('alamat')->nullable();
+            $table->string('no_hp')->nullable();
+            $table->string('nama_barber')->nullable();
+            $table->string('longitude')->nullable();
+            $table->string('latitude')->nullable();
             $table->timestamps();
         });
     }

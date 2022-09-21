@@ -2,7 +2,9 @@
 
 namespace App\Http\Controllers;
 
+use App\Models\Barber;
 use App\Models\Prodi;
+use App\Models\Profile;
 use App\Models\Role;
 use App\Models\User;
 use Illuminate\Http\Request;
@@ -36,8 +38,8 @@ class UserController extends Controller {
             'email' => 'required|email',
             'password' => 'required',
             'name' => 'nullable|string',
-            'role' => 'required',
-            'prodi' => 'nullable'
+            'role' => 'nullable',
+            'nama_barber' => 'nullable'
         ]);
 
         $user = User::where('email', $creds['email'])->first();
@@ -49,11 +51,20 @@ class UserController extends Controller {
             'email' => $creds['email'],
             'password' => Hash::make($creds['password']),
             'name' => $creds['name'],
+            'role' => $creds['role']
         ]);
-        
-        $user->roles()->attach(Role::where('slug', $creds['role'])->first());
-        if($creds['prodi']){
-            $user->prodi()->attach(Prodi::where('slug', $creds['prodi'])->first());
+
+        if($creds['role'] == 'user'){
+            $profile = new Profile();
+            $profile->nama = $creds['name'];
+            $profile->user_id = $user->id;
+            $profile->save();
+        } else {
+            $barber = new Barber();
+            $barber->user_id = $user->id;
+            $barber->nama = $creds['name'];
+            $barber->nama_barber = $creds['nama_barber'];
+            $barber->save();
         }
 
         return $user;
@@ -95,6 +106,14 @@ class UserController extends Controller {
         return response(['error' => 0, 'data' => $data, 'token' => $plainTextToken], 200);
     }
 
+    public function barber(Request $request){
+        $data = Barber::all();
+
+        return response()->json([
+            'data' => $data
+        ]);
+    }
+
     /**
      * Display the specified resource.
      *
@@ -102,7 +121,19 @@ class UserController extends Controller {
      * @return \App\Models\User  $user
      */
     public function show(User $user) {
-        return $user;
+        if($user->role == 'user'){
+            $res = Profile::where(['user_id'=> $user->id])->first();
+        } else {
+            $res = Barber::where(['user_id'=> $user->id])->first();
+        }
+
+        if(!$res){
+            return response()->json([
+                'error' => 1,
+                'message' => 'not found'
+            ]);
+        }
+        return $res;
     }
 
     /**
