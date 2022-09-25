@@ -22,6 +22,9 @@ return new class extends Migration
             $table->string('nama_barber')->nullable();
             $table->string('longitude')->nullable();
             $table->string('latitude')->nullable();
+            $table->string('profile')->nullable();
+            $table->string('status')->nullable();
+
             $table->timestamps();
         });
     }

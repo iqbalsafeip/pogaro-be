@@ -30,6 +30,7 @@ Route::get('hydra/version', [HydraController::class, 'version']);
 Route::apiResource('users', UserController::class)->except(['edit', 'create', 'store', 'update']);
 Route::post('users', [UserController::class, 'store']);
 Route::get('barber', [UserController::class, 'barber']);
+Route::get('barber/{id:barber}', [UserController::class, 'barberid']);
 Route::get('mahasiswa', [UserController::class, 'mahasiswa'])->middleware(['auth:sanctum', 'ability:admin,super-admin,user']);
 Route::post('approval', [ApprovalController::class, 'create'])->middleware(['auth:sanctum']);
 Route::get('approval/{user:id}', [ApprovalController::class, 'getApprovalById']);

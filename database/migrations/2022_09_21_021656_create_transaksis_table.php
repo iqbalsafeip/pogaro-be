@@ -22,6 +22,8 @@ return new class extends Migration
             $table->string('longitude');
             $table->string('latitude');
             $table->string('waktu');
+            $table->string('tanggal');
+            $table->string('ongkir');
             $table->timestamps();
         });
     }

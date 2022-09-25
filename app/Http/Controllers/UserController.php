@@ -39,7 +39,8 @@ class UserController extends Controller {
             'password' => 'required',
             'name' => 'nullable|string',
             'role' => 'nullable',
-            'nama_barber' => 'nullable'
+            'nama_barber' => 'nullable',
+            'foto' => 'nullable'
         ]);
 
         $user = User::where('email', $creds['email'])->first();
@@ -64,6 +65,10 @@ class UserController extends Controller {
             $barber->user_id = $user->id;
             $barber->nama = $creds['name'];
             $barber->nama_barber = $creds['nama_barber'];
+            $barber->status = 0;
+            $imageName = time().'.'.$creds['foto']->getClientOriginalExtension();
+            $creds['foto']->move(public_path('images'), $imageName);
+            $barber->profile = $imageName;
             $barber->save();
         }
 
@@ -87,28 +92,27 @@ class UserController extends Controller {
             return response(['error' => 1, 'message' => 'Email/ Password tidak sesuai'], 401);
         }
 
-        if (config('hydra.delete_previous_access_tokens_on_login', false)) {
-            $user->tokens()->delete();
-        }
-
-        $roles = $user->roles->pluck('slug')->all();
 
 
-        $plainTextToken = $user->createToken('hydra-api-token', $roles)->plainTextToken;
 
         $data = $user;
-        $data['roles'] = $data->roles;
-        if($data->prodi){
-            $data['prodi'] = $data->prodi;
-        }
+        
 
 
-        return response(['error' => 0, 'data' => $data, 'token' => $plainTextToken], 200);
+        return response(['error' => 0, 'data' => $data], 200);
     }
 
     public function barber(Request $request){
         $data = Barber::all();
 
+        return response()->json([
+            'data' => $data
+        ]);
+    }
+
+    public function barberid($id){
+        $data = Barber::findOrFail($id);
+        $data['services'] = $data->services;
         return response()->json([
             'data' => $data
         ]);
