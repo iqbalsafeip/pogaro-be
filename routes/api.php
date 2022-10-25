@@ -2,6 +2,7 @@
 
 use App\Http\Controllers\ApprovalController;
 use App\Http\Controllers\HydraController;
+use App\Http\Controllers\KatalogController;
 use App\Http\Controllers\MetodePembayaranController;
 use App\Http\Controllers\RoleController;
 use App\Http\Controllers\ServiceController;
@@ -29,6 +30,7 @@ Route::get('hydra/version', [HydraController::class, 'version']);
 
 Route::apiResource('users', UserController::class)->except(['edit', 'create', 'store', 'update']);
 Route::post('users', [UserController::class, 'store']);
+Route::post('ubahProfile/{barber:id}', [UserController::class, 'ubahProfile']);
 Route::get('barber', [UserController::class, 'barber']);
 Route::get('barber/{id:barber}', [UserController::class, 'barberid']);
 Route::get('mahasiswa', [UserController::class, 'mahasiswa'])->middleware(['auth:sanctum', 'ability:admin,super-admin,user']);
@@ -46,7 +48,16 @@ Route::apiResource('users.roles', UserRoleController::class)->except(['create', 
 
 Route::get('service/{id:service}', [ServiceController::class, 'index']);
 Route::post('service', [ServiceController::class, 'store']);
+Route::post('transaksi', [ServiceController::class, 'transaksi']);
 Route::get('service/{id:service}/delete', [ServiceController::class, 'hapus']);
 Route::get('metode-pembayaran/{id:service}', [MetodePembayaranController::class, 'index']);
 Route::post('metode-pembayaran', [MetodePembayaranController::class, 'store']);
 Route::get('metode-pembayaran/{id:service}/delete', [MetodePembayaranController::class, 'hapus']);
+Route::get('katalog/{id:service}', [KatalogController::class, 'index']);
+Route::post('katalog', [KatalogController::class, 'store']);
+Route::get('katalog/{id:service}/delete', [KatalogController::class, 'hapus']);
+Route::get("transaksi/{user:id}", [ServiceController::class, "transaksid"]);
+Route::get("transaksi-riwayat/{user:id}", [ServiceController::class, "riwayat"]);
+Route::get("transaksi-riwayat-barber/{user:id}", [ServiceController::class, "riwayatBarber"]);
+Route::post('upload', [ServiceController::class, 'uploadBukti']);
+Route::post('verifikasi/{id:transaksi}', [ServiceController::class, 'verifikasi']);

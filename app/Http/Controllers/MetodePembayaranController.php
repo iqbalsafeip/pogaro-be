@@ -8,7 +8,7 @@ use Illuminate\Http\Request;
 class MetodePembayaranController extends Controller
 {
     public function index($id){
-        $res = MetodePembayaran::where(['barber_id' => $id])->all();
+        $res = MetodePembayaran::where(['barber_id' => $id])->get();
 
         return response()->json([
             'data' => $res

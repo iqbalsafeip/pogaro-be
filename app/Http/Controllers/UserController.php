@@ -66,13 +66,24 @@ class UserController extends Controller {
             $barber->nama = $creds['name'];
             $barber->nama_barber = $creds['nama_barber'];
             $barber->status = 0;
-            $imageName = time().'.'.$creds['foto']->getClientOriginalExtension();
-            $creds['foto']->move(public_path('images'), $imageName);
-            $barber->profile = $imageName;
+            // if($creds['foto']){
+            //     $imageName = time().'.'.$creds['foto']->getClientOriginalExtension();
+            //     $creds['foto']->move(public_path('images'), $imageName);
+            //     $barber->profile = $imageName;
+            // }
             $barber->save();
         }
 
         return $user;
+    }
+
+    public function ubahProfile($id, Request $request){
+        $barber = Barber::findOrFail($id);
+        $imageName = time().'.'.$request->profile->getClientOriginalExtension();
+        $request->profile->move(public_path('images'), $imageName);
+        $barber->profile = $imageName;
+        $barber->save();
+        return response()->json($barber);
     }
 
     /**
@@ -199,6 +210,7 @@ class UserController extends Controller {
      * @return mixed
      */
     public function me(Request $request) {
+        $id = $request->get("id");
         $user = $request->user();
         $user['roles'] = $user->roles;
         if($user->prodi){
